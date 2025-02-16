@@ -3,9 +3,10 @@ package core
 import (
 	stderr "errors"
 	"fmt"
-	"github.com/pkg/errors"
 	"io"
 	"net/http"
+
+	"github.com/pkg/errors"
 )
 
 type DefaultError struct {
