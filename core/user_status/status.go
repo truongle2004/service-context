@@ -3,8 +3,8 @@ package userstatus
 const (
 	ACTIVE  = "ACTIVE"
 	DELETE  = "DELETE"
-	LOCK    = "LOCK"
+	LOCKED  = "LOCKED"
 	REJECT  = "REJECT"
 	UNLOCK  = "UNLOCK"
-	PEDNING = "PENDING"
+	PENDING = "PENDING"
 )
