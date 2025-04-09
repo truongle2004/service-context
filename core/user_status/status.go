@@ -1,10 +1,21 @@
 package userstatus
 
+type UserStatus string
+
 const (
-	ACTIVE  = "ACTIVE"
-	DELETE  = "DELETE"
-	LOCKED  = "LOCKED"
-	REJECT  = "REJECT"
-	UNLOCK  = "UNLOCK"
-	PENDING = "PENDING"
+	ACTIVE  UserStatus = "ACTIVE"
+	DELETE  UserStatus = "DELETE"
+	LOCKED  UserStatus = "LOCKED"
+	REJECT  UserStatus = "REJECT"
+	UNLOCK  UserStatus = "UNLOCK"
+	PENDING UserStatus = "PENDING"
 )
+
+func (s UserStatus) IsValid() bool {
+	switch s {
+	case ACTIVE, DELETE, LOCKED, REJECT, UNLOCK, PENDING:
+		return true
+	default:
+		return false
+	}
+}
