@@ -8,13 +8,12 @@ import (
 )
 
 type SQLModel struct {
-	ID        string    `json:"-" gorm:"primaryKey;"`
+	ID        string    `gorm:"primaryKey"`
 	CreatedAt time.Time `json:"created_at,omitempty" gorm:"autoCreateTime;column:created_at"`
 	UpdatedAt time.Time `json:"updated_at,omitempty" gorm:"autoUpdateTime;column:updated_at"`
 }
 
-// BeforeCreate - Automatically assigns a UUID to FakeId before saving
-func (sqlModel *SQLModel) BeforeCreate(ctx *gorm.DB) {
-	// Generate uuid and store it as FakeId
+func (sqlModel *SQLModel) BeforeCreate(tx *gorm.DB) (err error) {
 	sqlModel.ID = uuid.New().String()
+	return
 }
