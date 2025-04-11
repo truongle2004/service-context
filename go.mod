@@ -7,6 +7,7 @@ require github.com/google/uuid v1.6.0
 require github.com/pkg/errors v0.9.1
 
 require (
+	github.com/golang-jwt/jwt/v5 v5.2.2
 	github.com/jinzhu/inflection v1.0.0 // indirect
 	github.com/jinzhu/now v1.1.5 // indirect
 	golang.org/x/text v0.24.0 // indirect
