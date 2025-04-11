@@ -1,4 +1,4 @@
-package userstatus
+package core
 
 type UserStatus string
 
