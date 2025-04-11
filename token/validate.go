@@ -7,7 +7,7 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 )
 
-func validateToken(tokenString string, publicKey *ecdsa.PublicKey) (*jwt.MapClaims, error) {
+func ValidateToken(tokenString string, publicKey *ecdsa.PublicKey) (*jwt.MapClaims, error) {
 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 		// Ensure token uses ES256
 		if _, ok := token.Method.(*jwt.SigningMethodECDSA); !ok {
