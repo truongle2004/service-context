@@ -3,7 +3,7 @@ package middleware
 import (
 	"bytes"
 	"encoding/json"
-	"net/http"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 )
@@ -35,7 +35,7 @@ func ResponseFormatterMiddleware() gin.HandlerFunc {
 		contentType := c.Writer.Header().Get("Content-Type")
 
 		// Use captured response body if JSON
-		if contentType == "application/json" {
+		if strings.Contains(contentType, "application/json") {
 			var parsed any
 			_ = json.Unmarshal(writer.body.Bytes(), &parsed)
 
@@ -44,14 +44,12 @@ func ResponseFormatterMiddleware() gin.HandlerFunc {
 				c.JSON(status, gin.H{
 					"success": false,
 					"error":   parsed,
-					"message": http.StatusText(status),
 				})
 			} else {
 				// Success case
 				c.JSON(status, gin.H{
 					"success": true,
 					"data":    parsed,
-					"message": http.StatusText(status),
 				})
 			}
 			return
