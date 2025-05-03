@@ -14,48 +14,54 @@ type responseWriter struct {
 	body *bytes.Buffer
 }
 
-func (w responseWriter) Write(b []byte) (int, error) {
-	w.body.Write(b)
-	return w.ResponseWriter.Write(b)
+func (w *responseWriter) Write(b []byte) (int, error) {
+	return w.body.Write(b) // Just buffer it; do not write to the real writer yet
 }
 
-// ResponseHandlerMiddleware wraps the response body with a standard format
 func ResponseHandlerMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		// Capture the response body
 		buf := new(bytes.Buffer)
 		writer := &responseWriter{body: buf, ResponseWriter: c.Writer}
 		c.Writer = writer
 
-		// Process the request
 		c.Next()
 
 		statusCode := c.Writer.Status()
 		contentType := c.Writer.Header().Get("Content-Type")
 
-		// If there's an error set in context, process it
+		// Handle errors
 		if len(c.Errors) > 0 {
 			lastErr := c.Errors.Last().Err
 			defErr := core.ToDefaultError(lastErr, c.GetString("RequestID"))
+
+			// Reset and write error response
+			c.Writer = writer.ResponseWriter
 			c.JSON(defErr.StatusCode(), defErr)
 			return
 		}
 
-		// Only wrap JSON responses (skip if already structured)
+		// Handle successful JSON response
 		if contentType == "application/json" && statusCode < 300 {
 			var originalData interface{}
 			if err := json.Unmarshal(writer.body.Bytes(), &originalData); err != nil {
-				defErr := core.ErrInternalServerError.WithDebugf("Failed to parse JSON: %v", err)
-				c.JSON(http.StatusInternalServerError, defErr)
+				c.Writer = writer.ResponseWriter
+				c.JSON(http.StatusInternalServerError, core.ErrInternalServerError.WithDetail("error", err.Error()))
 				return
 			}
 
-			// Overwrite the response with a wrapped format
+			// Reset and write wrapped success response
+			c.Writer = writer.ResponseWriter
 			c.JSON(statusCode, gin.H{
 				"success": true,
 				"data":    originalData,
 				"message": http.StatusText(statusCode),
 			})
+			return
 		}
+
+		// For non-JSON or other responses: write raw content
+		c.Writer = writer.ResponseWriter
+		c.Writer.WriteHeaderNow()
+		_, _ = c.Writer.Write(writer.body.Bytes())
 	}
 }
