@@ -14,47 +14,55 @@ type responseWriter struct {
 	body *bytes.Buffer
 }
 
-func (w responseWriter) Write(b []byte) (int, error) {
+func (w *responseWriter) Write(b []byte) (int, error) {
 	w.body.Write(b)
 	return w.ResponseWriter.Write(b)
 }
 
-// ResponseHandlerMiddleware wraps the response body with a standard format
+// ResponseHandlerMiddleware wraps the response with a standard format
 func ResponseHandlerMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		// Capture the response body
+		// Wrap the response writer to capture output
 		buf := new(bytes.Buffer)
-		writer := &responseWriter{body: buf, ResponseWriter: c.Writer}
+		writer := &responseWriter{ResponseWriter: c.Writer, body: buf}
 		c.Writer = writer
 
 		// Process the request
 		c.Next()
 
-		statusCode := c.Writer.Status()
-		contentType := c.Writer.Header().Get("Content-Type")
-
-		// If there's an error set in context, process it
+		// If there is an error in context, handle it
 		if len(c.Errors) > 0 {
 			lastErr := c.Errors.Last().Err
 			defErr := core.ToDefaultError(lastErr, c.GetString("RequestID"))
-			c.JSON(defErr.StatusCode(), defErr)
+			c.JSON(defErr.StatusCode(), gin.H{
+				"success": false,
+				"error":   defErr,
+			})
 			return
 		}
 
-		// Only wrap JSON responses (skip if already structured)
+		// Handle success responses for JSON
+		statusCode := c.Writer.Status()
+		contentType := c.Writer.Header().Get("Content-Type")
+
+		// Only wrap JSON responses
 		if contentType == "application/json" && statusCode < 300 {
 			var originalData interface{}
 			if err := json.Unmarshal(writer.body.Bytes(), &originalData); err != nil {
 				defErr := core.ErrInternalServerError.WithDebugf("Failed to parse JSON: %v", err)
-				c.JSON(http.StatusInternalServerError, defErr)
+				c.JSON(http.StatusInternalServerError, gin.H{
+					"success": false,
+					"error":   defErr,
+				})
 				return
 			}
 
-			// Overwrite the response with a wrapped format
+			// Success response, wrap data in standard format
 			c.JSON(statusCode, gin.H{
 				"success": true,
 				"data":    originalData,
 				"message": http.StatusText(statusCode),
+				"request": c.GetString("RequestID"),
 			})
 		}
 	}
