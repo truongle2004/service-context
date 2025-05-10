@@ -14,6 +14,8 @@ type SQLModel struct {
 }
 
 func (sqlModel *SQLModel) BeforeCreate(tx *gorm.DB) (err error) {
-	sqlModel.ID = uuid.New().String()
+	if sqlModel.ID == "" {
+		sqlModel.ID = uuid.New().String()
+	}
 	return
 }
