@@ -54,5 +54,5 @@ require (
 	github.com/redis/go-redis/v9 v9.8.0
 	github.com/spf13/viper v1.20.1
 	golang.org/x/text v0.24.0 // indirect
-	gorm.io/gorm v1.25.12 // indirect
+	gorm.io/gorm v1.25.12
 )
