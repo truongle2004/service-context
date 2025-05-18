@@ -1,39 +1,38 @@
 package logger
 
 import (
-	"github.com/sirupsen/logrus"
+	"fmt"
+	"log"
 )
 
-var log = logrus.New()
-
 func Info(msg string) {
-	log.Info(msg)
+	log.Println("[INFO]", msg)
 }
 
 func Infof(format string, v ...any) {
-	log.Infof(format, v...)
+	log.Println("[INFO]", fmt.Sprintf(format, v...))
 }
 
 func Error(msg string) {
-	log.Error(msg)
+	log.Println("[ERROR]", msg)
 }
 
 func Errorf(format string, v ...any) {
-	log.Errorf(format, v...)
+	log.Println("[ERROR]", fmt.Sprintf(format, v...))
 }
 
 func Debug(msg string) {
-	log.Debug(msg)
+	log.Println("[DEBUG]", msg)
 }
 
 func Debugf(format string, v ...any) {
-	log.Debugf(format, v...)
+	log.Println("[DEBUG]", fmt.Sprintf(format, v...))
 }
 
 func Warn(msg string) {
-	log.Warn(msg)
+	log.Println("[WARN]", msg)
 }
 
 func Warnf(format string, v ...any) {
-	log.Warnf(format, v...)
+	log.Println("[WARN]", fmt.Sprintf(format, v...))
 }
