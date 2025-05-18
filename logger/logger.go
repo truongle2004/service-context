@@ -1,6 +1,10 @@
 package logger
 
-import "github.com/charmbracelet/log"
+import (
+	"github.com/sirupsen/logrus"
+)
+
+var log = logrus.New()
 
 func Info(msg string) {
 	log.Info(msg)
