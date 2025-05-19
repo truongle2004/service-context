@@ -9,6 +9,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/redis/go-redis/v9"
+	"github.com/truongle2004/service-context/logger"
 )
 
 var (
@@ -30,6 +31,8 @@ func InitRedis(addr, password string, db int) error {
 
 		if err := RedisClient.Ping(ctx).Err(); err != nil {
 			initErr = err
+		} else {
+			logger.Info("Redis client initialized")
 		}
 	})
 

@@ -1,7 +1,9 @@
 package utils
 
 import (
+	"log"
 	"mime/multipart"
+	"os"
 	"path/filepath"
 
 	"github.com/gin-gonic/gin"
@@ -28,4 +30,21 @@ func SaveImageToFolder(ctx *gin.Context, dst string, file *multipart.FileHeader)
 // Returns: -> string
 func GenerateDst(path, fileName string) string {
 	return filepath.Join(path, fileName)
+}
+
+func createNewUploadFolder() {
+	log.Println("Starting to create new folder upload image")
+	if err := os.MkdirAll("upload", os.ModePerm); err != nil {
+		log.Println("Error during creating new folder upload image")
+	}
+}
+
+func ImageUploadConfig() error {
+	// Make sure the dir upload exists
+	if err := os.MkdirAll("/upload", os.ModePerm); err != nil {
+		// if the folder not exist, create new
+		log.Println("Folder upload not exists, start to create a new one")
+		createNewUploadFolder()
+	}
+	return nil
 }
