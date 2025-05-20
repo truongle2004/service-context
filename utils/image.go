@@ -39,9 +39,12 @@ func createNewUploadFolder() {
 	}
 }
 
-func ImageUploadConfig() error {
+func ImageUploadConfig(path string) error {
 	// Make sure the dir upload exists
-	if err := os.MkdirAll("/upload", os.ModePerm); err != nil {
+	if path == "" {
+		path = "/upload"
+	}
+	if err := os.MkdirAll(path, os.ModePerm); err != nil {
 		// if the folder not exist, create new
 		log.Println("Folder upload not exists, start to create a new one")
 		createNewUploadFolder()
